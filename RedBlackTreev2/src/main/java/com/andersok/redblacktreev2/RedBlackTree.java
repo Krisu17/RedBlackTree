@@ -13,11 +13,15 @@ public class RedBlackTree implements MapInterface {
     }
 
     private void leftRotation(Node x) {
-
+        Node tmp = x.getRight().getLeft();
+        x.getRight().setLeft(x);
+        x.setRight(tmp);
     }
 
-    private void rightRotation(Node x) {
-
+    private void rightRotation(Node y) {
+        Node tmp = y.getLeft().getRight();
+        y.getLeft().setRight(y);
+        y.setLeft(tmp);
     }
 
     private void rebuildTree(Node x, Node grandfather) {
@@ -27,13 +31,30 @@ public class RedBlackTree implements MapInterface {
                     grandfather.getLeft().setColor('b');
                     grandfather.getRight().setColor('b');
                     grandfather.setColor('r');
-                } else if (grandfather.getRight().getColor() == 'b' 
-                        && grandfather.getLeft().getRight() == x) {
+                } else if (grandfather.getLeft().getRight() == x) {
                     leftRotation(x.getUp());
                 } else {
                     x.getUp().setColor('r');
                     grandfather.setColor('r');
                     rightRotation(grandfather);
+                }
+            } else {  // ojciec jest prawym synem swojego ojca
+                if (grandfather.getLeft().getColor() == 'r') {
+                    grandfather.getRight().setColor('b');
+                    grandfather.getLeft().setColor('b');
+                    grandfather.setColor('r');
+                } else if (grandfather.getRight().getLeft() == x) {
+                    if(x.getUp().getColor() == 'r'){
+                        x.getUp().setColor('b');
+                    } else {
+                        x.getUp().setColor('r');
+                    }
+                    if(x.getColor() == 'r') {
+                        x.setColor('b');
+                    } else {
+                        x.setColor('r');
+                    }
+                    rightRotation(x.getUp());
                 }
             }
         }
@@ -77,6 +98,7 @@ public class RedBlackTree implements MapInterface {
                         n.setRight(null);
                         n.setColor('r');
                         flag = false;
+                        rebuildTree(n, grandfather);
                     }
                 }
             }
